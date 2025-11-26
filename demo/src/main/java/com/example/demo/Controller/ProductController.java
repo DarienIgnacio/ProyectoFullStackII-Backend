@@ -1,44 +1,33 @@
-package com.levelup.backend.controller;
+package com.example.demo.controller;
 
-import com.levelup.backend.entity.Product;
-import com.levelup.backend.service.ProductService;
+import com.example.demo.model.Producto;
+import com.example.demo.service.ProductoService;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/productos")
-@CrossOrigin("*")
-public class ProductController {
+public class ProductoController {
 
-    private final ProductService service;
+    private final ProductoService productoService;
 
-    public ProductController(ProductService service) {
-        this.service = service;
+    public ProductoController(ProductoService productoService) {
+        this.productoService = productoService;
     }
 
     @GetMapping
-    public List<Product> getAll() {
-        return service.getAll();
+    public List<Producto> getAll() {
+        return productoService.getAll();
     }
 
     @GetMapping("/{id}")
-    public Product getById(@PathVariable Long id) {
-        return service.getById(id);
+    public Producto getById(@PathVariable String id) {
+        return productoService.getById(id);
     }
 
     @PostMapping
-    public Product create(@RequestBody Product p) {
-        return service.save(p);
-    }
-
-    @PutMapping("/{id}")
-    public Product update(@PathVariable Long id, @RequestBody Product p) {
-        p.setId(id);
-        return service.save(p);
-    }
-
-    @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) {
-        service.delete(id);
+    public Producto create(@RequestBody Producto p) {
+        return productoService.create(p);
     }
 }
