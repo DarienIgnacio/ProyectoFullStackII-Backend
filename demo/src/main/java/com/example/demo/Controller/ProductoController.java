@@ -1,42 +1,31 @@
-package com.levelup.backend.controller;
+package com.example.demo.controller;
 
-import com.levelup.backend.entity.Product;
-import com.levelup.backend.service.ProductService;
+import com.example.demo.model.Producto;
+import com.example.demo.service.ProductoService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/productos")
 @CrossOrigin(origins = "http://localhost:3000")
-public class ProductController {
+public class ProductoController {
 
-    private final ProductService service;
+    private final ProductoService productoService;
 
-    public ProductController(ProductService service) {
-        this.service = service;
+    public ProductoController(ProductoService productoService) {
+        this.productoService = productoService;
     }
 
     @GetMapping
-    public ResponseEntity<List<Product>> getAll(
-            @RequestParam(required = false) String search,
-            @RequestParam(required = false) String categoria
-    ) {
-
-        if (search != null && !search.isEmpty()) {
-            return ResponseEntity.ok(service.search(search));
-        }
-
-        if (categoria != null && !categoria.isEmpty()) {
-            return ResponseEntity.ok(service.getByCategory(categoria));
-        }
-
-        return ResponseEntity.ok(service.getAll());
+    public ResponseEntity<List<Producto>> getAll() {
+        return ResponseEntity.ok(productoService.getAll());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Product> getById(@PathVariable Long id) {
-        Product producto = service.getById(id);
+    public ResponseEntity<Producto> getById(@PathVariable Long id) {
+        Producto producto = productoService.getById(id);
         if (producto == null) {
             return ResponseEntity.notFound().build();
         }
@@ -44,31 +33,18 @@ public class ProductController {
     }
 
     @PostMapping
-    public ResponseEntity<Product> create(@RequestBody Product p) {
-        return ResponseEntity.ok(service.save(p));
+    public ResponseEntity<Producto> create(@RequestBody Producto p) {
+        return ResponseEntity.ok(productoService.create(p));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Product> update(@PathVariable Long id, @RequestBody Product p) {
-
-        Product existing = service.getById(id);
-        if (existing == null) {
-            return ResponseEntity.notFound().build();
-        }
-
-        p.setId(id);
-        return ResponseEntity.ok(service.save(p));
+    public ResponseEntity<Producto> update(@PathVariable Long id, @RequestBody Producto p) {
+        return ResponseEntity.ok(productoService.update(id, p));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> delete(@PathVariable Long id) {
-
-        Product existing = service.getById(id);
-        if (existing == null) {
-            return ResponseEntity.notFound().build();
-        }
-
-        service.delete(id);
+        productoService.delete(id);
         return ResponseEntity.ok("Producto eliminado");
     }
 }

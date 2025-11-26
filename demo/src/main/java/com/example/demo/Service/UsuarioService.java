@@ -1,45 +1,30 @@
-package com.levelup.backend.service;
+package com.example.demo.service;
 
-import com.levelup.backend.entity.User;
-import com.levelup.backend.repository.UserRepository;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import com.example.demo.model.Usuario;
+import com.example.demo.repository.UsuarioRepository;
 import org.springframework.stereotype.Service;
 
 @Service
-public class UserService {
+public class UsuarioService {
 
-    private final UserRepository repo;
-    private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+    private final UsuarioRepository repo;
 
-    public UserService(UserRepository repo) {
+    public UsuarioService(UsuarioRepository repo) {
         this.repo = repo;
     }
 
-    public User register(User u) {
-
-        // Validar email existente
-        if (repo.findByEmail(u.getEmail()) != null) {
-            throw new RuntimeException("Correo ya registrado");
+    public Usuario registrar(Usuario user) {
+        if (repo.findByEmail(user.getEmail()) != null) {
+            throw new RuntimeException("El email ya está registrado");
         }
-
-        // Encriptar contraseña
-        u.setPassword(encoder.encode(u.getPassword()));
-
-        return repo.save(u);
+        return repo.save(user);
     }
 
-    public User login(String email, String password) {
-
-        User user = repo.findByEmail(email);
-
-        if (user == null) {
-            return null;
+    public Usuario login(String email, String password) {
+        Usuario user = repo.findByEmail(email);
+        if (user != null && user.getPassword().equals(password)) {
+            return user;
         }
-
-        if (!encoder.matches(password, user.getPassword())) {
-            return null;
-        }
-
-        return user;
+        return null;
     }
 }
