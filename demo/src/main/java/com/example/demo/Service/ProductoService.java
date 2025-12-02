@@ -28,15 +28,10 @@ public class ProductoService {
     }
 
     public Producto update(Long id, Producto p) {
-        Producto existente = repo.findById(id).orElse(null);
-        if (existente == null) return null;
+        if (!repo.existsById(id)) return null;
 
-        existente.setNombre(p.getNombre());
-        existente.setCategoria(p.getCategoria());
-        existente.setPrecio(p.getPrecio());
-        existente.setImagen(p.getImagen());
-
-        return repo.save(existente);
+        p.setId(id);
+        return repo.save(p);
     }
 
     public void delete(Long id) {

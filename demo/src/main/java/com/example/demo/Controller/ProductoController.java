@@ -12,39 +12,39 @@ import java.util.List;
 @CrossOrigin(origins = "http://localhost:3000")
 public class ProductoController {
 
-    private final ProductoService productoService;
+    private final ProductoService service;
 
-    public ProductoController(ProductoService productoService) {
-        this.productoService = productoService;
+    public ProductoController(ProductoService service) {
+        this.service = service;
     }
 
     @GetMapping
-    public ResponseEntity<List<Producto>> getAll() {
-        return ResponseEntity.ok(productoService.getAll());
+    public List<Producto> getAll() {
+        return service.getAll();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Producto> getById(@PathVariable Long id) {
-        Producto producto = productoService.getById(id);
-        if (producto == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(producto);
+        Producto p = service.getById(id);
+        if (p == null) return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(p);
     }
 
     @PostMapping
-    public ResponseEntity<Producto> create(@RequestBody Producto p) {
-        return ResponseEntity.ok(productoService.create(p));
+    public Producto create(@RequestBody Producto p) {
+        return service.create(p);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Producto> update(@PathVariable Long id, @RequestBody Producto p) {
-        return ResponseEntity.ok(productoService.update(id, p));
+        Producto updated = service.update(id, p);
+        if (updated == null) return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(updated);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> delete(@PathVariable Long id) {
-        productoService.delete(id);
+        service.delete(id);
         return ResponseEntity.ok("Producto eliminado");
     }
 }

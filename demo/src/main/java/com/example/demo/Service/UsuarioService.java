@@ -21,10 +21,10 @@ public class UsuarioService {
     }
 
     public Usuario login(String email, String password) {
-        Usuario user = repo.findByEmail(email);
-        if (user != null && user.getPassword().equals(password)) {
-            return user;
-        }
-        return null;
+        Usuario u = repo.findByEmail(email);
+        if (u == null) return null;
+        if (!u.getPassword().equals(password)) return null;
+
+        return u;
     }
 }
