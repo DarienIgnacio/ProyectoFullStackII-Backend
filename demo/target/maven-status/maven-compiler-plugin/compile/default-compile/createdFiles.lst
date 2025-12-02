@@ -1,10 +1,10 @@
-com\example\demo\model\Producto.class
 com\example\demo\model\Usuario.class
-com\example\demo\repository\UsuarioRepository.class
-com\example\demo\LevelUpGamerAppApplication.class
-com\example\demo\controller\UsuarioController.class
-com\example\demo\service\UsuarioService.class
 com\example\demo\repository\ProductoRepository.class
 com\example\demo\service\ProductoService.class
 com\example\demo\config\CorsConfig.class
 com\example\demo\controller\ProductoController.class
+com\example\demo\model\Producto.class
+com\example\demo\repository\UsuarioRepository.class
+com\example\demo\LevelUpGamerAppApplication.class
+com\example\demo\controller\UsuarioController.class
+com\example\demo\service\UsuarioService.class
