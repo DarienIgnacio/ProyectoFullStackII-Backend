@@ -1,11 +1,9 @@
 package com.example.demo.config;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
+import org.springframework.context.annotation.*;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.*;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
@@ -20,20 +18,23 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-        http
-                .csrf(csrf -> csrf.disable())
+        http.csrf(csrf -> csrf.disable())
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // permitir login y registro sin token
-                        .requestMatchers("/api/usuarios/registro", "/api/usuarios/login", "/v2/api-docs", "/swagger-ui/**", "/swagger-resources/**").permitAll()
-                        // permitir ver productos sin token
-                        .requestMatchers("/api/productos", "/api/productos/**").permitAll() // si quieres proteger POST/PUT/DELETE podemos ajustarlo
-                        // cualquier otra cosa requiere autenticación
+                        // público
+                        .requestMatchers("/api/usuarios/login", "/api/usuarios/registro").permitAll()
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+
+                        // productos solo lectura
+                        .requestMatchers("/api/productos", "/api/productos/*").permitAll()
+
+                        // 👇 SOLO ADMIN PUEDE MODIFICAR
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+
+                        // resto autenticado
                         .anyRequest().authenticated()
                 )
-                .httpBasic(Customizer.withDefaults());
-
-        http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

@@ -1,56 +1,65 @@
 package com.example.demo.config;
 
-import com.example.demo.model.Usuario;
-import io.jsonwebtoken.*;
-import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.stereotype.Component;
 
-import java.security.Key;
 import java.util.Date;
 
 @Component
 public class JwtUtil {
 
-    // CLAVE SECRETA (para demo). En producción guárdala en variable de entorno.
-    private final String SECRET = "EstaEsUnaClaveSuperSecretaParaLevelUpGamer123!";
-    private final long EXPIRATION_MS = 1000 * 60 * 60 * 4; // 4 horas
+    private final String SECRET = "claveSuperSecreta123";
 
-    private Key getSigningKey() {
-        return Keys.hmacShaKeyFor(SECRET.getBytes());
-    }
+    private final long EXPIRATION = 1000 * 60 * 60 * 24; // 24 horas
 
-    public String generarToken(Usuario user) {
-        Date ahora = new Date();
-        Date expiracion = new Date(ahora.getTime() + EXPIRATION_MS);
-
+    // --------------------------------------------------------
+    // GENERAR TOKEN JWT
+    // --------------------------------------------------------
+    public String generarToken(String email, String rol) {
         return Jwts.builder()
-                .setSubject(user.getEmail())
-                .claim("id", user.getId())
-                .claim("nombre", user.getNombre())
-                .claim("rol", user.getRol())
-                .setIssuedAt(ahora)
-                .setExpiration(expiracion)
-                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+                .setSubject(email)
+                .claim("rol", rol)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION))
+                .signWith(SignatureAlgorithm.HS256, SECRET)
                 .compact();
     }
 
-    public String obtenerEmail(String token) {
-        return parseClaims(token).getBody().getSubject();
-    }
-
+    // --------------------------------------------------------
+    // VALIDAR TOKEN
+    // --------------------------------------------------------
     public boolean esTokenValido(String token) {
         try {
-            parseClaims(token);
+            obtenerClaims(token);
             return true;
-        } catch (JwtException ex) {
+        } catch (Exception e) {
             return false;
         }
     }
 
-    private Jws<Claims> parseClaims(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(getSigningKey())
-                .build()
-                .parseClaimsJws(token);
+    // --------------------------------------------------------
+    // OBTENER EMAIL DESDE TOKEN
+    // --------------------------------------------------------
+    public String obtenerEmail(String token) {
+        return obtenerClaims(token).getSubject();
+    }
+
+    // --------------------------------------------------------
+    // OBTENER EL ROL DEL TOKEN
+    // --------------------------------------------------------
+    public String obtenerRol(String token) {
+        return obtenerClaims(token).get("rol", String.class);
+    }
+
+    // --------------------------------------------------------
+    // MÉTODO INTERNO PARA LEER EL TOKEN
+    // --------------------------------------------------------
+    private Claims obtenerClaims(String token) {
+        return Jwts.parser()
+                .setSigningKey(SECRET)
+                .parseClaimsJws(token)
+                .getBody();
     }
 }

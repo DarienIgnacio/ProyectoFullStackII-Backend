@@ -2,47 +2,52 @@ package com.example.demo.controller;
 
 import com.example.demo.model.Usuario;
 import com.example.demo.service.UsuarioService;
-import com.example.demo.config.JwtUtil;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/usuarios")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "*")
 public class UsuarioController {
 
     private final UsuarioService usuarioService;
-    private final JwtUtil jwtUtil;
 
-    public UsuarioController(UsuarioService usuarioService, JwtUtil jwtUtil) {
+    public UsuarioController(UsuarioService usuarioService) {
         this.usuarioService = usuarioService;
-        this.jwtUtil = jwtUtil;
     }
 
+    // ------------------------------------
+    // REGISTRO DE USUARIO
+    // ------------------------------------
     @PostMapping("/registro")
     public ResponseEntity<?> registrar(@RequestBody Usuario user) {
         try {
-            Usuario creado = usuarioService.registrar(user);
-            String token = jwtUtil.generarToken(creado);
-
-            return ResponseEntity.ok(new AuthResponse(token, creado));
-        } catch (RuntimeException e) {
+            Usuario u = usuarioService.registrar(user);
+            return ResponseEntity.ok(u);
+        } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
+    // ------------------------------------
+    // LOGIN → DEVUELVE TOKEN JWT
+    // ------------------------------------
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Usuario user) {
-        Usuario valid = usuarioService.validarUsuario(user.getEmail(), user.getPassword());
+        try {
+            String token = usuarioService.login(user.getEmail(), user.getPassword());
 
-        if (valid == null) {
+            return ResponseEntity.ok(
+                    new LoginResponse(token, user.getEmail())
+            );
+
+        } catch (Exception e) {
             return ResponseEntity.status(401).body("Credenciales inválidas");
         }
-
-        String token = jwtUtil.generarToken(valid);
-        return ResponseEntity.ok(new AuthResponse(token, valid));
     }
 
-    // DTO interno para la respuesta
-    public record AuthResponse(String token, Usuario usuario) {}
+    // ------------------------------------
+    // Clase interna para estandarizar la respuesta del login
+    // ------------------------------------
+    public record LoginResponse(String token, String email) {}
 }
