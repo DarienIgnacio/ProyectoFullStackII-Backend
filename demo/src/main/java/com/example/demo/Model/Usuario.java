@@ -19,10 +19,14 @@ public class Usuario {
 
     @Email
     @NotNull
+    @Column(unique = true)
     private String email;
 
     @NotNull
     private String password;
 
     private String fechaNacimiento;
+
+    // Nuevo: rol simple (USER o ADMIN)
+    private String rol = "USER";
 }
