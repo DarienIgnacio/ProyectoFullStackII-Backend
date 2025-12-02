@@ -18,7 +18,7 @@ public class DataLoader {
                 p1.setNombre("PlayStation 5");
                 p1.setCategoria("Consolas");
                 p1.setPrecio(599000);
-                p1.setImagen("https://example.com/ps5.jpg");
+                p1.setImagen("https://cdn.hobbyconsolas.com/sites/navi.axelspringer.es/public/media/image/2020/06/ps5-1965135.jpg?tf=3840x");
 
                 Producto p2 = new Producto();
                 p2.setNombre("RTX 4060 Ti");
