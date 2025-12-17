@@ -23,7 +23,7 @@ public class ProductoController {
         return service.getAll();
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/productos/{id}")
     public ResponseEntity<Producto> getById(@PathVariable Long id) {
         Producto p = service.getById(id);
         if (p == null) return ResponseEntity.notFound().build();
@@ -35,14 +35,14 @@ public class ProductoController {
         return service.create(p);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/productos/{id}")
     public ResponseEntity<Producto> update(@PathVariable Long id, @RequestBody Producto p) {
         Producto updated = service.update(id, p);
         if (updated == null) return ResponseEntity.notFound().build();
         return ResponseEntity.ok(updated);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/productos/{id}")
     public ResponseEntity<String> delete(@PathVariable Long id) {
         service.delete(id);
         return ResponseEntity.ok("Producto eliminado");
